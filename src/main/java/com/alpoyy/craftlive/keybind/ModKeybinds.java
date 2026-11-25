@@ -92,4 +92,18 @@ public final class ModKeybinds {
     private static void configManagerSave() {
         com.alpoyy.craftlive.CraftLiveServices.get().configManager.saveAsync();
     }
+
+    /** Binding descriptor for the Settings tab display. */
+    public record Binding(String name, KeyMapping mapping) {
+    }
+
+    /** All registered CraftLive bindings in display order. */
+    public static java.util.List<Binding> all() {
+        java.util.List<Binding> list = new java.util.ArrayList<>();
+        if (OPEN_GUI != null) list.add(new Binding("Buka GUI (M)", OPEN_GUI));
+        if (TOGGLE_HUD != null) list.add(new Binding("Toggle semua HUD (T)", TOGGLE_HUD));
+        if (HUD_EDITOR != null) list.add(new Binding("HUD Editor (J)", HUD_EDITOR));
+        if (STREAM_MODE != null) list.add(new Binding("Stream Mode (L)", STREAM_MODE));
+        return list;
+    }
 }

@@ -17,6 +17,7 @@ import net.minecraft.client.gui.GuiGraphics;
  */
 public class SettingsTab extends TabBase {
     private final CraftLiveServices services;
+    private final com.alpoyy.craftlive.gui.CraftLiveScreen ownerScreen;
     private ClTextField apiKeyField;
     private ClTextField usernameField;
     private ClTextField ytDlpPathField;
@@ -25,7 +26,12 @@ public class SettingsTab extends TabBase {
     private String testResult = null;
 
     public SettingsTab(CraftLiveServices services) {
+        this(services, null);
+    }
+
+    public SettingsTab(CraftLiveServices services, com.alpoyy.craftlive.gui.CraftLiveScreen ownerScreen) {
         this.services = services;
+        this.ownerScreen = ownerScreen;
     }
 
     @Override
@@ -241,6 +247,31 @@ public class SettingsTab extends TabBase {
             toggles.add(new ClToggle(cx, cy, "Culling widget tersembunyi", () -> cfg.performanceCullHiddenWidgets, v -> cfg.performanceCullHiddenWidgets = v));
             for (ClToggle t : toggles) t.render(g, font, mouseX, mouseY, a);
             cy += 28;
+
+            // ===== Keybinds =====
+            section(g, font, "Keybinds (Options → Controls → CraftLive)", cx, cy, scroll.w, a);
+            cy += 18;
+            var binds = com.alpoyy.craftlive.keybind.ModKeybinds.all();
+            for (var entry : binds) {
+                String name = entry.name();
+                String key = entry.mapping().getTranslatedKeyMessage().getString();
+                g.drawString(font, name, cx, cy, CraftLiveTheme.withAlpha(CraftLiveTheme.TEXT_DIM, a), true);
+                g.drawString(font, key, cx + 160, cy, CraftLiveTheme.withAlpha(CraftLiveTheme.ACCENT_HOVER, a), true);
+                cy += 13;
+            }
+            ClButton openControls = new ClButton(cx, cy, 190, 18, "Buka Controls Minecraft", ClButton.Style.SECONDARY,
+                    b -> {
+                        var mc = net.minecraft.client.Minecraft.getInstance();
+                        if (mc != null && mc.options != null) {
+                            mc.setScreen(new net.minecraft.client.gui.screens.options.controls.KeyBindsScreen(
+                                    ownerScreen, mc.options));
+                        }
+                    });
+            openControls.render(g, font, mouseX, mouseY, a, true);
+            cy += 26;
+            g.drawString(font, "Semua keybind dapat diubah & di-reset di sana.", cx, cy,
+                    CraftLiveTheme.withAlpha(CraftLiveTheme.TEXT_DIM, a * 0.8f), true);
+            cy += 22;
 
             // ===== Reset =====
             section(g, font, "Konfigurasi", cx, cy, scroll.w, a);

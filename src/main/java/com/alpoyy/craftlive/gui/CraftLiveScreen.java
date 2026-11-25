@@ -58,7 +58,7 @@ public class CraftLiveScreen extends Screen {
         tabs.add(new LyricsTab(services));
         tabs.add(new ClockTab(services));
         tabs.add(new HudEditorTab(services));
-        tabs.add(new SettingsTab(services));
+        tabs.add(new SettingsTab(services, this));
         activeTab = Math.min(activeTab, tabs.size() - 1);
         tabs.get(activeTab).onShow();
         openAnim = 0f;
@@ -190,7 +190,16 @@ public class CraftLiveScreen extends Screen {
         g.fill(cx + 6, cy + 14, cx + cw - 6, cy + 15, CraftLiveTheme.withAlpha(CraftLiveTheme.BORDER, alpha * 0.6f));
 
         float contentAlpha = alpha * (animations ? (closing ? 1f - closeAnim : tabFade) : 1f);
-        tabs.get(activeTab).render(g, font, cx + 2, cy + 20, cw - 4, ch - 24, mouseX, mouseY, contentAlpha, now);
+        try {
+            tabs.get(activeTab).render(g, font, cx + 2, cy + 20, cw - 4, ch - 24, mouseX, mouseY, contentAlpha, now);
+        } catch (Exception e) {
+            // a GUI bug must never crash the game — show it inline instead
+            com.alpoyy.craftlive.CraftLive.LOGGER.error("Tab {} failed to render", tabs.get(activeTab).id(), e);
+            g.drawString(font, "⚠ Kesalahan menampilkan tab ini: " + e.getClass().getSimpleName(),
+                    cx + 8, cy + 30, CraftLiveTheme.withAlpha(CraftLiveTheme.ERROR, contentAlpha), true);
+            g.drawString(font, "Lihat log terbaru untuk detail. Fitur lain tetap bisa dipakai.",
+                    cx + 8, cy + 44, CraftLiveTheme.withAlpha(CraftLiveTheme.TEXT_DIM, contentAlpha), true);
+        }
 
         // tooltips
         renderTooltips(g, mouseX, mouseY, alpha);

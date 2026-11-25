@@ -98,13 +98,13 @@ public class LyricsTab extends TabBase {
             for (ClToggle t : toggles) t.render(g, font, mouseX, mouseY, a);
             cy += 24;
 
-            // offset slider
+            // offset slider (±10 s) — label built from an int, never %d on a float
             sliders.clear();
             ClSlider offset = new ClSlider(cx, cy, 200, "Offset", () -> {
                 long off = lyrics.manualOffsetMs();
                 return Math.max(0f, Math.min(1f, 0.5f + off / 10000f));
             }, v -> lyrics.setManualOffsetMs((long) ((v - 0.5f) * 20000f)));
-            offset.format = "%+d ms";
+            offset.labelFormatter = v -> String.format("%+d ms", (int) Math.round((v - 0.5) * 20000));
             sliders.add(offset);
             offset.render(g, font, mouseX, mouseY, a);
             cy += 36;

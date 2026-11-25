@@ -21,6 +21,7 @@ base {
 repositories {
     mavenCentral()
     maven { url = "https://maven.fabricmc.net/" }
+    maven { url = "https://maven.terraformersmc.com/releases/" }
     maven { url = "https://jitpack.io/" }
 }
 
@@ -29,6 +30,10 @@ dependencies {
     mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+    // Mod Menu — compile-only so it stays OPTIONAL at runtime; the "modmenu"
+    // entrypoint is only invoked when Mod Menu is actually installed.
+    modCompileOnly "com.terraformersmc:modmenu:17.0.1"
 
     // EulerStream / TikTok LIVE realtime integration (documented at
     // eulerstream.com/docs/libraries/java; delivered via JitPack).

@@ -18,6 +18,10 @@ public class ClSlider {
     private final Consumer<Float> setter;
     private boolean dragging = false;
     public String format = "%.2f";
+    /** Optional custom label renderer (receives the 0..1 slider value).
+     * When set, takes precedence over {@link #format} — and failures in
+     * either path can never crash the GUI (see valueLabel). */
+    public java.util.function.DoubleFunction<String> labelFormatter = null;
 
     public ClSlider(int x, int y, int w, String label, DoubleSupplier getter, Consumer<Float> setter) {
         this.x = x;
@@ -42,8 +46,29 @@ public class ClSlider {
         ClRender.roundedRect(g, handleX - 4, trackY - 3, 8, 10, 4,
                 CraftLiveTheme.withAlpha(hovered || dragging ? CraftLiveTheme.ACCENT_HOVER : 0xFFFFFF, alpha));
 
-        String valueText = String.format(format, value);
+        String valueText = valueLabel(value);
         g.drawString(font, valueText, x + w + 8, y + 6, CraftLiveTheme.withAlpha(CraftLiveTheme.TEXT_DIM, alpha), true);
+    }
+
+    /** Never throws: a bad format string degrades to a plain number instead
+     * of crashing the screen (previously "%+d" with a float value crashed). */
+    private String valueLabel(float value) {
+        if (labelFormatter != null) {
+            try {
+                return labelFormatter.apply(value);
+            } catch (Exception ignored) {
+            }
+        }
+        try {
+            return String.format(format, value);
+        } catch (Exception e) {
+            return String.format("%.2f", value);
+        }
+    }
+
+    /** Unit test hook: label formatting must never throw. */
+    public String labelForTest(float value) {
+        return valueLabel(value);
     }
 
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
