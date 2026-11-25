@@ -25,11 +25,12 @@ public class CraftLiveConfig {
 
     // ---- UI & Interaction sounds ----
     public boolean uiSoundsEnabled = true;
-    public float uiSoundVolume = 0.6f;               // separate from music volume
+    public float uiSoundVolume = 0.8f;               // separate from music volume
     public boolean uiSoundClick = true;
     public boolean uiSoundToggle = true;
     public boolean uiSoundTab = true;
-    public boolean uiSoundMenu = true;
+    public boolean uiSoundMenuOpen = true;
+    public boolean uiSoundMenuClose = true;
     public boolean uiSoundWidget = true;
     public boolean uiSoundHover = false;             // optional, off by default
 
@@ -142,7 +143,8 @@ public class CraftLiveConfig {
         this.uiSoundClick = loaded.uiSoundClick;
         this.uiSoundToggle = loaded.uiSoundToggle;
         this.uiSoundTab = loaded.uiSoundTab;
-        this.uiSoundMenu = loaded.uiSoundMenu;
+        this.uiSoundMenuOpen = loaded.uiSoundMenuOpen;
+        this.uiSoundMenuClose = loaded.uiSoundMenuClose;
         this.uiSoundWidget = loaded.uiSoundWidget;
         this.uiSoundHover = loaded.uiSoundHover;
         this.mockMode = loaded.mockMode;

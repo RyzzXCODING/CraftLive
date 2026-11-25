@@ -9,6 +9,7 @@ import net.minecraft.client.gui.GuiGraphics;
 public class ClScrollPanel {
     public int x, y, w, h;
     public final ScrollModel model = new ScrollModel();
+    private boolean scrollbarDragging = false;
 
     public ClScrollPanel(int x, int y, int w, int h) {
         this.x = x;
@@ -40,6 +41,42 @@ public class ClScrollPanel {
     /** True when the cursor is inside this panel's bounds. */
     public boolean isOver(double mouseX, double mouseY) {
         return mouseX >= x && mouseX <= x + w && mouseY >= y && mouseY <= y + h;
+    }
+
+    // ---- scrollbar dragging ----
+
+    /** Begin dragging the scrollbar thumb; true when the press hit it. */
+    public boolean startScrollbarDrag(double mouseX, double mouseY) {
+        if (!isScrollbarVisible()) return false;
+        if (mouseX >= x + w - 7 && mouseX <= x + w && mouseY >= y && mouseY <= y + h) {
+            scrollbarDragging = true;
+            applyThumbDrag(mouseY);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean dragScrollbar(double mouseY) {
+        if (!scrollbarDragging) return false;
+        applyThumbDrag(mouseY);
+        return true;
+    }
+
+    public void stopScrollbarDrag() {
+        scrollbarDragging = false;
+    }
+
+    public boolean isScrollbarDragging() {
+        return scrollbarDragging;
+    }
+
+    private void applyThumbDrag(double mouseY) {
+        float contentTotal = model.maxScroll() + h;
+        int barH = Math.max(24, (int) (h * (h / contentTotal)));
+        float track = Math.max(1f, h - barH);
+        float frac = (float) ((mouseY - y) - barH / 2f) / track;
+        frac = Math.max(0f, Math.min(1f, frac));
+        model.setTarget(frac * model.maxScroll());
     }
 
     /** Draw content with clipping + scrollbar. */

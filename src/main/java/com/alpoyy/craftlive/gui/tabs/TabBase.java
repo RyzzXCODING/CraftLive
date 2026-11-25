@@ -84,6 +84,8 @@ public abstract class TabBase implements Tab {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (!isOverPanel(mouseX, mouseY)) return false;
+        // scrollbar thumb drag takes priority over content controls
+        if (button == 0 && scroll.startScrollbarDrag(mouseX, mouseY)) return true;
         double cy = toContentY(mouseY);
         for (ClButton b : buttons) {
             if (b.mouseClicked(mouseX, cy, button)) {
@@ -118,6 +120,8 @@ public abstract class TabBase implements Tab {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY) {
+        // scrollbar drag continues even if the cursor drifts outside the panel
+        if (scroll.dragScrollbar(mouseY)) return true;
         if (!isOverPanel(mouseX, mouseY) && !anySliderDragging()) return false;
         double cy = toContentY(mouseY);
         for (ClSlider s : sliders) {
@@ -155,6 +159,7 @@ public abstract class TabBase implements Tab {
 
     @Override
     public void mouseReleased() {
+        scroll.stopScrollbarDrag();
         for (ClSlider s : sliders) s.mouseReleased();
     }
 

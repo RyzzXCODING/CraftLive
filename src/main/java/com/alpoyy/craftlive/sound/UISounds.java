@@ -89,11 +89,11 @@ public final class UISounds {
     }
 
     public static void open() {
-        play(OPEN, "ui.open", cfg -> cfg.uiSoundMenu, 1.0f);
+        play(OPEN, "ui.open", cfg -> cfg.uiSoundMenuOpen, 1.0f);
     }
 
     public static void close() {
-        play(CLOSE, "ui.close", cfg -> cfg.uiSoundMenu, 1.0f);
+        play(CLOSE, "ui.close", cfg -> cfg.uiSoundMenuClose, 1.0f);
     }
 
     public static void widget() {

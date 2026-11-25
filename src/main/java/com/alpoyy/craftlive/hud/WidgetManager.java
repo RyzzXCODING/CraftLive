@@ -112,7 +112,9 @@ public class WidgetManager {
     // ---- editor interactions ----
 
     public HudWidget widgetAt(double mouseX, double mouseY) {
-        // topmost = last registered that contains the point
+        // Editor-only hit test: topmost = last registered containing the
+        // point. Hidden widgets count too (rendered as ghosts) so they can
+        // be re-shown with a right-click.
         List<HudWidget> list = all();
         for (int i = list.size() - 1; i >= 0; i--) {
             HudWidget w = list.get(i);

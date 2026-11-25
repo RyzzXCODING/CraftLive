@@ -157,12 +157,30 @@ class ConfigManagerTest {
         CraftLiveConfig config = new CraftLiveConfig();
         assertEquals(com.alpoyy.craftlive.theme.AccentColor.DEFAULT_HEX, config.accentColorHex);
         assertTrue(config.uiSoundsEnabled);
-        assertEquals(0.6f, config.uiSoundVolume, 0.001f);
+        assertEquals(0.8f, config.uiSoundVolume, 0.001f);
         assertTrue(config.uiSoundClick);
         assertTrue(config.uiSoundToggle);
         assertTrue(config.uiSoundTab);
-        assertTrue(config.uiSoundMenu);
+        assertTrue(config.uiSoundMenuOpen);
+        assertTrue(config.uiSoundMenuClose);
         assertTrue(config.uiSoundWidget);
         assertFalse(config.uiSoundHover);
+    }
+
+    @Test
+    void menuOpenCloseTogglesRoundTrip() throws Exception {
+        Path path = tempDir.resolve("cfg.json");
+        ConfigManager first = new ConfigManager(path);
+        CraftLiveConfig config = first.load();
+        config.uiSoundMenuOpen = false;
+        config.uiSoundMenuClose = false;
+        config.uiSoundVolume = 1.0f;
+        first.saveNow();
+
+        ConfigManager second = new ConfigManager(path);
+        CraftLiveConfig loaded = second.load();
+        assertFalse(loaded.uiSoundMenuOpen);
+        assertFalse(loaded.uiSoundMenuClose);
+        assertEquals(1.0f, loaded.uiSoundVolume, 0.001f);
     }
 }

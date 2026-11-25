@@ -126,7 +126,7 @@ public class SettingsTab extends TabBase {
         layout(x, y, w, h);
         scroll.render(g, alpha, () -> {
             int cx = scroll.x;
-            int cy = scroll.y + (int) scroll.offset() + 4;
+            int cy = scroll.y + 4; // panel applies the -offset translate (was double-applied before)
             float a = alpha;
             var cfg = services.config;
 
@@ -276,22 +276,30 @@ public class SettingsTab extends TabBase {
             cy += 24;
             toggles.clear();
             toggles.add(new ClToggle(cx, cy, "Suara pindah tab", () -> cfg.uiSoundTab, v -> cfg.uiSoundTab = v));
-            toggles.add(new ClToggle(cx + 200, cy, "Suara buka/tutup menu", () -> cfg.uiSoundMenu, v -> cfg.uiSoundMenu = v));
+            toggles.add(new ClToggle(cx + 200, cy, "Suara buka menu", () -> cfg.uiSoundMenuOpen, v -> cfg.uiSoundMenuOpen = v));
             for (ClToggle t : toggles) t.render(g, font, mouseX, mouseY, a);
             cy += 24;
             toggles.clear();
-            toggles.add(new ClToggle(cx, cy, "Suara widget/HUD editor", () -> cfg.uiSoundWidget, v -> cfg.uiSoundWidget = v));
-            toggles.add(new ClToggle(cx + 200, cy, "Suara hover (opsional)", () -> cfg.uiSoundHover, v -> cfg.uiSoundHover = v));
+            toggles.add(new ClToggle(cx, cy, "Suara tutup menu", () -> cfg.uiSoundMenuClose, v -> cfg.uiSoundMenuClose = v));
+            toggles.add(new ClToggle(cx + 200, cy, "Suara widget/HUD editor", () -> cfg.uiSoundWidget, v -> cfg.uiSoundWidget = v));
             for (ClToggle t : toggles) t.render(g, font, mouseX, mouseY, a);
             cy += 24;
-            ClButton resetSounds = new ClButton(cx, cy, 150, 18, "Reset Sound Settings", ClButton.Style.SECONDARY,
+            toggles.clear();
+            toggles.add(new ClToggle(cx, cy, "Suara hover (opsional)", () -> cfg.uiSoundHover, v -> cfg.uiSoundHover = v));
+            for (ClToggle t : toggles) t.render(g, font, mouseX, mouseY, a);
+            cy += 24;
+            ClButton previewBtn = new ClButton(cx, cy, 110, 18, "🔊 Preview Suara", ClButton.Style.SECONDARY,
+                    b -> com.alpoyy.craftlive.sound.UISounds.confirm());
+            previewBtn.render(g, font, mouseX, mouseY, a, true);
+            ClButton resetSounds = new ClButton(cx + 120, cy, 150, 18, "Reset Sound Settings", ClButton.Style.SECONDARY,
                     b -> {
                         cfg.uiSoundsEnabled = true;
-                        cfg.uiSoundVolume = 0.6f;
+                        cfg.uiSoundVolume = 0.8f;
                         cfg.uiSoundClick = true;
                         cfg.uiSoundToggle = true;
                         cfg.uiSoundTab = true;
-                        cfg.uiSoundMenu = true;
+                        cfg.uiSoundMenuOpen = true;
+                        cfg.uiSoundMenuClose = true;
                         cfg.uiSoundWidget = true;
                         cfg.uiSoundHover = false;
                         com.alpoyy.craftlive.sound.UISounds.resetThrottle();

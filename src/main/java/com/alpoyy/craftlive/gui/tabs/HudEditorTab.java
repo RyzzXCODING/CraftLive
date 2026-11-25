@@ -56,7 +56,7 @@ public class HudEditorTab extends TabBase {
         layout(x, y, w, h);
         scroll.render(g, alpha, () -> {
             int cx = scroll.x;
-            int cy = scroll.y + (int) scroll.offset() + 4;
+            int cy = scroll.y + 4; // panel applies the -offset translate (was double-applied before)
             float a = alpha;
 
             for (ClButton b : buttons) b.render(g, font, mouseX, mouseY, a, true);

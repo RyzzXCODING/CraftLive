@@ -56,12 +56,30 @@ public abstract class HudWidget {
         return scale;
     }
 
-    public float renderWidth() {
-        return width * scale;
+    /**
+     * The global (Settings) scale currently applied at render time.
+     * Kept on the widget so hitboxes, clamping and rendering share ONE
+     * coordinate calculation (fixes hitboxes not matching when the global
+     * HUD scale ≠ 1).
+     */
+    private volatile float lastGlobalScale = 1f;
+
+    public void setLastGlobalScale(float globalScale) {
+        this.lastGlobalScale = Math.max(0.1f, globalScale);
     }
 
+    public float lastGlobalScale() {
+        return lastGlobalScale;
+    }
+
+    /** On-screen rendered width — the single source of truth for hitboxes. */
+    public float renderWidth() {
+        return width * scale * lastGlobalScale;
+    }
+
+    /** On-screen rendered height — the single source of truth for hitboxes. */
     public float renderHeight() {
-        return height * scale;
+        return height * scale * lastGlobalScale;
     }
 
     public float getX() {
@@ -191,11 +209,16 @@ public abstract class HudWidget {
 
     /** Called each frame when visible. Handles scale/opacity/pop-in; subclass draws content. */
     public final void render(GuiGraphics g, float globalScale, float globalOpacity, boolean editorMode, long epochMs) {
-        if (!visible) return;
+        lastGlobalScale = Math.max(0.1f, globalScale);
         // self-heal: keep widgets on-screen if the window resized or a saved
         // position no longer fits (safe every frame — cheap math)
         clampToScreen();
+        if (!visible && !editorMode) return;
+
         float alpha = opacity * globalOpacity;
+        // in the editor, hidden widgets render as low-opacity ghosts so they
+        // stay clickable (right-click to show again)
+        if (!visible) alpha *= 0.22f;
         if (alpha <= 0.02f) return;
 
         // pop-in animation
@@ -211,10 +234,11 @@ public abstract class HudWidget {
         float s = scale * globalScale;
         var pose = g.pose();
         pose.pushMatrix();
-        float cx = x + renderWidth() * globalScale / 2f;
-        float cy = y + renderHeight() * globalScale / 2f;
         pose.translate(x, y);
-        pose.scale(s * (0.92f + 0.08f * eased), s * (0.92f + 0.08f * eased));
+        // pop-in eases 0.92→1.0; skipped in editor mode so the hitbox matches
+        // the drawn rect exactly at all times
+        float popFactor = editorMode ? 1f : (0.92f + 0.08f * eased);
+        pose.scale(s * popFactor, s * popFactor);
         try {
             drawContent(g, (int) (width), (int) (height), alpha, editorMode, epochMs);
         } catch (Exception e) {
@@ -224,10 +248,12 @@ public abstract class HudWidget {
         pose.popMatrix();
 
         if (editorMode && selected) {
-            var mc = Minecraft.getInstance();
-            int sw = (int) (renderWidth() * globalScale) + 4;
-            int sh = (int) (renderHeight() * globalScale) + 4;
-            g.renderOutline((int) x - 2, (int) y - 2, sw, sh, CraftLiveTheme.withAlpha(CraftLiveTheme.accentHover(), 0.9f));
+            int sw = (int) renderWidth() + 4;
+            int sh = (int) renderHeight() + 4;
+            int outlineColor = visible
+                    ? CraftLiveTheme.withAlpha(CraftLiveTheme.accentHover(), 0.9f)
+                    : CraftLiveTheme.withAlpha(CraftLiveTheme.TEXT_DIM, 0.8f);
+            g.renderOutline((int) x - 2, (int) y - 2, sw, sh, outlineColor);
         }
     }
 

@@ -52,7 +52,7 @@ public class LiveStatsTab extends TabBase {
         layout(x, y, w, h);
         scroll.render(g, alpha, () -> {
             int cx = scroll.x;
-            int cy = scroll.y + (int) scroll.offset() + 4;
+            int cy = scroll.y + 4; // panel applies the -offset translate (was double-applied before)
             float a = alpha;
             var live = services.live;
             var stats = live.stats();
