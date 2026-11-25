@@ -37,7 +37,7 @@ public class ClToggle {
         int tw = 34;
         int th = 14;
         ClRender.roundedRect(g, tx, ty, tw, th, th / 2,
-                CraftLiveTheme.withAlpha(on ? CraftLiveTheme.ACCENT : CraftLiveTheme.PANEL_2, alpha));
+                CraftLiveTheme.withAlpha(on ? CraftLiveTheme.accent() : CraftLiveTheme.PANEL_2, alpha));
         int thumbX = tx + 2 + Math.round((tw - 4 - 10) * thumbAnim);
         ClRender.roundedRect(g, thumbX, ty + 2, 10, 10, 5,
                 CraftLiveTheme.withAlpha(0xFFFFFF, alpha * (on ? 1f : 0.75f)));
@@ -50,5 +50,10 @@ public class ClToggle {
             return true;
         }
         return false;
+    }
+
+    /** Test hook: current visual state. */
+    public boolean isOnForTest() {
+        return getter.getAsBoolean();
     }
 }

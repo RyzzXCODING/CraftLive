@@ -43,18 +43,18 @@ public class ClButton {
         float pop = animations ? pressAnim * 2f : 0f;
 
         int base = switch (style) {
-            case PRIMARY -> CraftLiveTheme.ACCENT;
+            case PRIMARY -> CraftLiveTheme.accent();
             case DANGER -> CraftLiveTheme.ERROR;
             case SUCCESS -> CraftLiveTheme.LIVE_GREEN;
             case SECONDARY -> CraftLiveTheme.PANEL_2;
             case GHOST -> CraftLiveTheme.PANEL;
         };
-        int color = enabled ? (hovered ? CraftLiveTheme.ACCENT_HOVER : base) : CraftLiveTheme.BORDER;
+        int color = enabled ? (hovered ? CraftLiveTheme.accentHover() : base) : CraftLiveTheme.BORDER;
         float inset = pop > 0 ? pop : 0;
         ClRender.roundedRectBordered(g,
                 x + (int) inset, y + (int) inset, w - 2 * (int) inset, h - 2 * (int) inset, 5,
                 CraftLiveTheme.withAlpha(color, alpha * 0.95f),
-                CraftLiveTheme.withAlpha(hovered ? CraftLiveTheme.ACCENT_HOVER : CraftLiveTheme.BORDER, alpha));
+                CraftLiveTheme.withAlpha(hovered ? CraftLiveTheme.accentHover() : CraftLiveTheme.BORDER, alpha));
 
         int textW = font.width(label);
         int textY = y + (h - 8) / 2;

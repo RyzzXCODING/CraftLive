@@ -33,7 +33,7 @@ public class LyricsWidget extends HudWidget {
         int pad = 8;
         float a = alpha;
 
-        g.drawString(font, "♪ LYRICS", pad, 4, CraftLiveTheme.withAlpha(CraftLiveTheme.ACCENT_HOVER, a), true);
+        g.drawString(font, "♪ LYRICS", pad, 4, CraftLiveTheme.withAlpha(CraftLiveTheme.accentHover(), a), true);
         if (lyrics.isSynced()) {
             g.drawString(font, "SYNC", w - font.width("SYNC") - pad, 4,
                     CraftLiveTheme.withAlpha(CraftLiveTheme.LIVE_GREEN, a), true);
@@ -83,7 +83,7 @@ public class LyricsWidget extends HudWidget {
                     CraftLiveTheme.withAlpha(color, lineAlpha), !isCurrent);
             if (isCurrent && lyrics.isSynced()) {
                 g.fill(pad, y + 11 + offsetY, pad + font.width(text), y + 12 + offsetY,
-                        CraftLiveTheme.withAlpha(CraftLiveTheme.ACCENT, a * 0.8f));
+                        CraftLiveTheme.withAlpha(CraftLiveTheme.accent(), a * 0.8f));
             }
         }
         g.disableScissor();

@@ -99,7 +99,7 @@ public class LiveChatTab extends TabBase {
                 if (lineY < feedTop - 14) break;
                 int yy = lineY;
                 int nameColor = switch (e.event.type) {
-                    case GIFT -> CraftLiveTheme.ACCENT_HOVER;
+                    case GIFT -> CraftLiveTheme.accentHover();
                     case FOLLOW -> CraftLiveTheme.LIVE_GREEN;
                     case JOIN -> CraftLiveTheme.TEXT_DIM;
                     default -> CraftLiveTheme.TEXT_DIM;

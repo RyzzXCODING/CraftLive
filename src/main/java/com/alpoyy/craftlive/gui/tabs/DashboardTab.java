@@ -91,7 +91,7 @@ public class DashboardTab extends TabBase {
             var current = services.requests.currentRequest();
             String reqValue = current == null ? "Tidak ada"
                     : ClRender.clip(font, current.track, colW - 16) + " — @" + current.requester;
-            cy = card(g, font, "Request aktif", reqValue, CraftLiveTheme.ACCENT_HOVER, cx, cy, colW, alpha);
+            cy = card(g, font, "Request aktif", reqValue, CraftLiveTheme.accentHover(), cx, cy, colW, alpha);
             cy = card(g, font, "Antrean", services.requests.queue().size() + "/" + services.requests.queue().maxQueue()
                             + (services.requests.queue().isPaused() ? " (dijeda)" : ""),
                     CraftLiveTheme.TEXT, cx, cy, colW, alpha);

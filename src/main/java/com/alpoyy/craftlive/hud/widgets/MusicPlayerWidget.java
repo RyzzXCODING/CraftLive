@@ -50,7 +50,7 @@ public class MusicPlayerWidget extends HudWidget {
             g.drawString(font, "Artis", pad, 31, CraftLiveTheme.withAlpha(CraftLiveTheme.TEXT_DIM, a), true);
             ClRender.progressBar(g, pad, 46, w - pad * 2, 5, 0.4f,
                     CraftLiveTheme.withAlpha(CraftLiveTheme.PANEL_2, a),
-                    CraftLiveTheme.withAlpha(CraftLiveTheme.ACCENT, a));
+                    CraftLiveTheme.withAlpha(CraftLiveTheme.accent(), a));
             return;
         }
 
@@ -82,13 +82,13 @@ public class MusicPlayerWidget extends HudWidget {
         if (progress >= 0 && track.durationMs > 0) {
             ClRender.progressBar(g, pad, 46, w - pad * 2 - 34, 5, (float) progress / track.durationMs,
                     CraftLiveTheme.withAlpha(CraftLiveTheme.PANEL_2, a),
-                    CraftLiveTheme.withAlpha(CraftLiveTheme.ACCENT, a));
+                    CraftLiveTheme.withAlpha(CraftLiveTheme.accent(), a));
             String time = formatMs(progress) + "/" + formatMs(track.durationMs);
             g.drawString(font, time, w - font.width(time) - pad, 43, CraftLiveTheme.withAlpha(CraftLiveTheme.TEXT_DIM, a), true);
         } else {
             ClRender.progressBar(g, pad, 46, w - pad * 2, 5, 0f,
                     CraftLiveTheme.withAlpha(CraftLiveTheme.PANEL_2, a),
-                    CraftLiveTheme.withAlpha(CraftLiveTheme.ACCENT, a * 0.5f));
+                    CraftLiveTheme.withAlpha(CraftLiveTheme.accent(), a * 0.5f));
         }
     }
 

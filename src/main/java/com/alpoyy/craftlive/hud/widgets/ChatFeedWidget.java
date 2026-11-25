@@ -47,7 +47,7 @@ public class ChatFeedWidget extends HudWidget {
         int pad = 6;
         float a = alpha;
 
-        g.drawString(font, "LIVE CHAT", pad, 4, CraftLiveTheme.withAlpha(CraftLiveTheme.ACCENT_HOVER, a), true);
+        g.drawString(font, "LIVE CHAT", pad, 4, CraftLiveTheme.withAlpha(CraftLiveTheme.accentHover(), a), true);
 
         List<ChatStore.Entry> entries = chat.snapshot();
         int lineHeight = 11;
@@ -63,7 +63,7 @@ public class ChatFeedWidget extends HudWidget {
             int y = 16 + row * lineHeight;
 
             int nameColor = switch (e.event.type) {
-                case GIFT -> CraftLiveTheme.withAlpha(CraftLiveTheme.ACCENT_HOVER, a);
+                case GIFT -> CraftLiveTheme.withAlpha(CraftLiveTheme.accentHover(), a);
                 case FOLLOW -> CraftLiveTheme.withAlpha(CraftLiveTheme.LIVE_GREEN, a);
                 case LIKE -> CraftLiveTheme.withAlpha(CraftLiveTheme.WARNING, a);
                 default -> CraftLiveTheme.withAlpha(CraftLiveTheme.TEXT_DIM, a);

@@ -16,8 +16,46 @@ public final class CraftLiveTheme {
     public static final int BORDER = 0x48494D;        // borders
 
     // ---- Accents ----
-    public static final int ACCENT = 0xC43A3A;        // primary red accent
-    public static final int ACCENT_HOVER = 0xE05252;  // accent hover
+    public static final int ACCENT = 0xC43A3A;        // DEFAULT red accent (CraftLive brand)
+    public static final int ACCENT_HOVER = 0xE05252;  // DEFAULT accent hover
+
+    // Global accent: one centralized value every accent-colored element reads.
+    // Defaults to the CraftLive red; user-customizable via Settings → Appearance.
+    private static volatile int accent = ACCENT;
+    private static volatile int accentHover = ACCENT_HOVER;
+
+    /** Current global accent color (0xRRGGBB). */
+    public static int accent() {
+        return accent;
+    }
+
+    /** Current global accent hover (auto-derived: accent mixed toward white). */
+    public static int accentHover() {
+        return accentHover;
+    }
+
+    /** Change the global accent instantly — every accent element follows. */
+    public static void setAccent(int rgb) {
+        int clean = rgb & 0xFFFFFF;
+        accent = clean;
+        accentHover = mixTowardWhite(clean, 0.28f);
+    }
+
+    /** Back to the CraftLive default red. */
+    public static void resetAccent() {
+        setAccent(ACCENT);
+        accentHover = ACCENT_HOVER; // exact brand hover, not derived
+    }
+
+    private static int mixTowardWhite(int rgb, float factor) {
+        int r = (rgb >> 16) & 0xFF;
+        int g = (rgb >> 8) & 0xFF;
+        int b = rgb & 0xFF;
+        r = Math.round(r + (255 - r) * factor);
+        g = Math.round(g + (255 - g) * factor);
+        b = Math.round(b + (255 - b) * factor);
+        return (r << 16) | (g << 8) | b;
+    }
 
     // ---- Text ----
     public static final int TEXT = 0xF1F1F1;          // main text

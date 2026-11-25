@@ -3,9 +3,11 @@ package com.alpoyy.craftlive.gui.tabs;
 import com.alpoyy.craftlive.CraftLiveServices;
 import com.alpoyy.craftlive.config.SecureStore;
 import com.alpoyy.craftlive.gui.components.ClButton;
+import com.alpoyy.craftlive.gui.components.ClSlider;
 import com.alpoyy.craftlive.gui.components.ClTextField;
 import com.alpoyy.craftlive.gui.components.ClToggle;
 import com.alpoyy.craftlive.live.ConnectionState;
+import com.alpoyy.craftlive.render.ClRender;
 import com.alpoyy.craftlive.theme.CraftLiveTheme;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -78,6 +80,8 @@ public class SettingsTab extends TabBase {
         buttons.add(new ClButton(0, 420, 110, 20, "Reset Konfigurasi", ClButton.Style.DANGER, b -> {
             services.configManager.resetToDefaults();
             services.requests.applyConfig();
+            com.alpoyy.craftlive.theme.CraftLiveTheme.resetAccent();
+            com.alpoyy.craftlive.sound.UISounds.confirm();
             services.notifications.push(com.alpoyy.craftlive.notify.NotificationBus.Notification.Level.WARNING,
                     "Settings", "Konfigurasi dikembalikan ke default.");
         }));
@@ -200,6 +204,133 @@ public class SettingsTab extends TabBase {
                 cy += 16;
             }
 
+            // ===== Appearance: global accent color =====
+            section(g, font, "Appearance — Accent Color", cx, cy, scroll.w, a);
+            cy += 18;
+            g.drawString(font, "Satu warna untuk semua garis & elemen accent (default merah CraftLive).", cx, cy,
+                    CraftLiveTheme.withAlpha(CraftLiveTheme.TEXT_DIM, a * 0.85f), true);
+            cy += 16;
+
+            // live preview swatch + current hex
+            ClRender.roundedRectBordered(g, cx, cy, 16, 16, 4,
+                    CraftLiveTheme.withAlpha(CraftLiveTheme.accent(), 1f),
+                    CraftLiveTheme.withAlpha(CraftLiveTheme.BORDER, a));
+            g.drawString(font, "Saat ini: " + cfg.accentColorHex.toUpperCase(), cx + 24, cy + 4,
+                    CraftLiveTheme.withAlpha(CraftLiveTheme.TEXT, a), true);
+            cy += 24;
+
+            // preset swatches — click to apply instantly
+            String[] presets = {"#C43A3A", "#4287FF", "#9B59F6", "#43C879", "#E08E3A", "#3AC8C8", "#E05B9B", "#A7A7A7"};
+            g.drawString(font, "Preset:", cx, cy + 3, CraftLiveTheme.withAlpha(CraftLiveTheme.TEXT_DIM, a), true);
+            int swx = cx + 60;
+            for (String hex : presets) {
+                int rgb = com.alpoyy.craftlive.theme.AccentColor.sanitize(hex);
+                ClRender.roundedRect(g, swx, cy - 2, 18, 16, 4, CraftLiveTheme.withAlpha(rgb, a));
+                if (hex.equalsIgnoreCase(cfg.accentColorHex)) {
+                    g.renderOutline(swx - 1, cy - 3, 20, 18, CraftLiveTheme.withAlpha(CraftLiveTheme.TEXT, a));
+                }
+                final String chosen = hex;
+                swatchButtons.put(chosen, new ClButton(swx, cy - 2, 18, 16, "", ClButton.Style.GHOST, b -> applyAccent(chosen)));
+                buttons.add(swatchButtons.get(chosen));
+                swx += 26;
+            }
+            cy += 24;
+
+            // HEX input
+            g.drawString(font, "HEX (#RRGGBB):", cx, cy, CraftLiveTheme.withAlpha(CraftLiveTheme.TEXT_DIM, a), true);
+            cy += 13;
+            hexField = ensureHexField(cx, cy, scroll.w - 100);
+            hexField.render(g, font, mouseX, mouseY, a, epochMs);
+            ensureApplyHexButton(cx + scroll.w - 92, cy).render(g, font, mouseX, mouseY, a, true);
+            cy += 26;
+
+            ensureResetAccentButton(cx, cy).render(g, font, mouseX, mouseY, a, true);
+            cy += 24;
+            g.drawString(font, "Background, panel, border, teks, status LIVE/WARNING/ERROR tidak berubah.", cx, cy,
+                    CraftLiveTheme.withAlpha(CraftLiveTheme.TEXT_DIM, a * 0.7f), true);
+            cy += 24;
+
+            // ===== UI & Interaction: sound effects =====
+            section(g, font, "UI & Interaction — Sound Effects", cx, cy, scroll.w, a);
+            cy += 18;
+            toggles.clear();
+            toggles.add(new ClToggle(cx, cy, "Aktifkan suara UI", () -> cfg.uiSoundsEnabled, v -> {
+                cfg.uiSoundsEnabled = v;
+                services.configManager.saveAsync();
+            }));
+            for (ClToggle t : toggles) t.render(g, font, mouseX, mouseY, a);
+            cy += 24;
+            sliders.clear();
+            sliders.add(new ClSlider(cx, cy, 200, "Volume suara UI", () -> (double) cfg.uiSoundVolume,
+                    v -> {
+                        cfg.uiSoundVolume = v;
+                        services.configManager.saveAsync();
+                    }));
+            sliders.get(0).format = "%.0f%%";
+            sliders.get(0).render(g, font, mouseX, mouseY, a);
+            cy += 36;
+            toggles.clear();
+            toggles.add(new ClToggle(cx, cy, "Suara tombol", () -> cfg.uiSoundClick, v -> cfg.uiSoundClick = v));
+            toggles.add(new ClToggle(cx + 200, cy, "Suara toggle", () -> cfg.uiSoundToggle, v -> cfg.uiSoundToggle = v));
+            for (ClToggle t : toggles) t.render(g, font, mouseX, mouseY, a);
+            cy += 24;
+            toggles.clear();
+            toggles.add(new ClToggle(cx, cy, "Suara pindah tab", () -> cfg.uiSoundTab, v -> cfg.uiSoundTab = v));
+            toggles.add(new ClToggle(cx + 200, cy, "Suara buka/tutup menu", () -> cfg.uiSoundMenu, v -> cfg.uiSoundMenu = v));
+            for (ClToggle t : toggles) t.render(g, font, mouseX, mouseY, a);
+            cy += 24;
+            toggles.clear();
+            toggles.add(new ClToggle(cx, cy, "Suara widget/HUD editor", () -> cfg.uiSoundWidget, v -> cfg.uiSoundWidget = v));
+            toggles.add(new ClToggle(cx + 200, cy, "Suara hover (opsional)", () -> cfg.uiSoundHover, v -> cfg.uiSoundHover = v));
+            for (ClToggle t : toggles) t.render(g, font, mouseX, mouseY, a);
+            cy += 24;
+            ClButton resetSounds = new ClButton(cx, cy, 150, 18, "Reset Sound Settings", ClButton.Style.SECONDARY,
+                    b -> {
+                        cfg.uiSoundsEnabled = true;
+                        cfg.uiSoundVolume = 0.6f;
+                        cfg.uiSoundClick = true;
+                        cfg.uiSoundToggle = true;
+                        cfg.uiSoundTab = true;
+                        cfg.uiSoundMenu = true;
+                        cfg.uiSoundWidget = true;
+                        cfg.uiSoundHover = false;
+                        com.alpoyy.craftlive.sound.UISounds.resetThrottle();
+                        services.configManager.saveAsync();
+                        com.alpoyy.craftlive.sound.UISounds.confirm();
+                        onShow();
+                    });
+            resetSounds.render(g, font, mouseX, mouseY, a, true);
+            cy += 28;
+            g.drawString(font, "Suara UI lewat kanal UI Minecraft — tidak mengubah volume global/music.", cx, cy,
+                    CraftLiveTheme.withAlpha(CraftLiveTheme.TEXT_DIM, a * 0.7f), true);
+            cy += 26;
+
+            // ===== Stream Mode master toggle =====
+            section(g, font, "Stream Mode (tombol L)", cx, cy, scroll.w, a);
+            cy += 18;
+            toggles.clear();
+            toggles.add(new ClToggle(cx, cy, "Stream Mode aktif", services.streamMode::isActive, v -> {
+                services.streamMode.setActive(v);
+                services.configManager.saveAsync();
+                com.alpoyy.craftlive.sound.UISounds.confirm();
+            }));
+            for (ClToggle t : toggles) t.render(g, font, mouseX, mouseY, a);
+            cy += 26;
+            toggles.clear();
+            toggles.add(new ClToggle(cx, cy, "Sembunyikan chat", () -> cfg.streamModeHideChat, v -> cfg.streamModeHideChat = v));
+            toggles.add(new ClToggle(cx + 200, cy, "Sembunyikan statistik", () -> cfg.streamModeHideStats, v -> cfg.streamModeHideStats = v));
+            for (ClToggle t : toggles) t.render(g, font, mouseX, mouseY, a);
+            cy += 24;
+            toggles.clear();
+            toggles.add(new ClToggle(cx, cy, "Sembunyikan notifikasi", () -> cfg.streamModeHideNotifications, v -> cfg.streamModeHideNotifications = v));
+            toggles.add(new ClToggle(cx + 200, cy, "Sembunyikan info koneksi", () -> cfg.streamModeHideConnectionInfo, v -> cfg.streamModeHideConnectionInfo = v));
+            for (ClToggle t : toggles) t.render(g, font, mouseX, mouseY, a);
+            cy += 24;
+            toggles.clear();
+            toggles.add(new ClToggle(cx, cy, "Sederhanakan HUD", () -> cfg.streamModeSimplifyHud, v -> cfg.streamModeSimplifyHud = v));
+            for (ClToggle t : toggles) t.render(g, font, mouseX, mouseY, a);
+            cy += 28;
+
             // ===== Live Chat =====
             section(g, font, "Live Chat", cx, cy, scroll.w, a);
             cy += 18;
@@ -220,24 +351,6 @@ public class SettingsTab extends TabBase {
             ytDlpPathField.render(g, font, mouseX, mouseY, a, epochMs);
             cy += 26;
 
-            // ===== Stream Mode =====
-            section(g, font, "Stream Mode (tombol L)", cx, cy, scroll.w, a);
-            cy += 18;
-            toggles.clear();
-            toggles.add(new ClToggle(cx, cy, "Sembunyikan chat", () -> cfg.streamModeHideChat, v -> cfg.streamModeHideChat = v));
-            toggles.add(new ClToggle(cx + 200, cy, "Sembunyikan statistik", () -> cfg.streamModeHideStats, v -> cfg.streamModeHideStats = v));
-            for (ClToggle t : toggles) t.render(g, font, mouseX, mouseY, a);
-            cy += 24;
-            toggles.clear();
-            toggles.add(new ClToggle(cx, cy, "Sembunyikan notifikasi", () -> cfg.streamModeHideNotifications, v -> cfg.streamModeHideNotifications = v));
-            toggles.add(new ClToggle(cx + 200, cy, "Sembunyikan info koneksi", () -> cfg.streamModeHideConnectionInfo, v -> cfg.streamModeHideConnectionInfo = v));
-            for (ClToggle t : toggles) t.render(g, font, mouseX, mouseY, a);
-            cy += 24;
-            toggles.clear();
-            toggles.add(new ClToggle(cx, cy, "Sederhanakan HUD", () -> cfg.streamModeSimplifyHud, v -> cfg.streamModeSimplifyHud = v));
-            for (ClToggle t : toggles) t.render(g, font, mouseX, mouseY, a);
-            cy += 28;
-
             // ===== Performance =====
             section(g, font, "Performa", cx, cy, scroll.w, a);
             cy += 18;
@@ -256,7 +369,7 @@ public class SettingsTab extends TabBase {
                 String name = entry.name();
                 String key = entry.mapping().getTranslatedKeyMessage().getString();
                 g.drawString(font, name, cx, cy, CraftLiveTheme.withAlpha(CraftLiveTheme.TEXT_DIM, a), true);
-                g.drawString(font, key, cx + 160, cy, CraftLiveTheme.withAlpha(CraftLiveTheme.ACCENT_HOVER, a), true);
+                g.drawString(font, key, cx + 160, cy, CraftLiveTheme.withAlpha(CraftLiveTheme.accentHover(), a), true);
                 cy += 13;
             }
             ClButton openControls = new ClButton(cx, cy, 190, 18, "Buka Controls Minecraft", ClButton.Style.SECONDARY,
@@ -288,6 +401,77 @@ public class SettingsTab extends TabBase {
     }
 
     // ---- lazy fields ----
+
+    private final java.util.Map<String, ClButton> swatchButtons = new java.util.LinkedHashMap<>();
+    private ClTextField hexField;
+    private ClButton applyHexButton;
+    private ClButton resetAccentButton;
+
+    /** Apply a hex accent color instantly (validated), persist, notify. */
+    private void applyAccent(String hex) {
+        int rgb = com.alpoyy.craftlive.theme.AccentColor.parseHex(hex);
+        if (rgb < 0) {
+            com.alpoyy.craftlive.sound.UISounds.click();
+            services.notifications.push(com.alpoyy.craftlive.notify.NotificationBus.Notification.Level.ERROR,
+                    "Accent Color", "HEX tidak valid: " + hex);
+            return;
+        }
+        CraftLiveTheme.setAccent(rgb);
+        services.config.accentColorHex = com.alpoyy.craftlive.theme.AccentColor.toHex(rgb);
+        services.configManager.saveAsync();
+        com.alpoyy.craftlive.sound.UISounds.confirm();
+        if (hexField != null) hexField.setText(com.alpoyy.craftlive.theme.AccentColor.toHex(rgb));
+    }
+
+    private ClTextField ensureHexField(int x, int y, int w) {
+        if (hexField == null) {
+            hexField = new ClTextField(x, y, w, 18, "#4287FF", s -> {
+                // live preview on valid input; invalid input never applies or crashes
+                int rgb = com.alpoyy.craftlive.theme.AccentColor.parseHex(s);
+                if (rgb >= 0) {
+                    CraftLiveTheme.setAccent(rgb);
+                }
+            });
+            hexField.setMaxLength(8);
+            hexField.setText(services.config.accentColorHex);
+            fields.add(hexField);
+        }
+        hexField.x = x;
+        hexField.y = y;
+        hexField.w = w;
+        return hexField;
+    }
+
+    private ClButton ensureApplyHexButton(int x, int y) {
+        if (applyHexButton == null) {
+            applyHexButton = new ClButton(x, y, 90, 18, "Terapkan", ClButton.Style.PRIMARY, b -> {
+                applyAccent(hexField == null ? "" : hexField.text());
+                onShow();
+            });
+            buttons.add(applyHexButton);
+        }
+        applyHexButton.x = x;
+        applyHexButton.y = y;
+        return applyHexButton;
+    }
+
+    private ClButton ensureResetAccentButton(int x, int y) {
+        if (resetAccentButton == null) {
+            resetAccentButton = new ClButton(x, y, 150, 18, "Reset ke Default (Merah)", ClButton.Style.SECONDARY,
+                    b -> {
+                        CraftLiveTheme.resetAccent();
+                        services.config.accentColorHex = com.alpoyy.craftlive.theme.AccentColor.DEFAULT_HEX;
+                        services.configManager.saveAsync();
+                        if (hexField != null) hexField.setText(com.alpoyy.craftlive.theme.AccentColor.DEFAULT_HEX);
+                        com.alpoyy.craftlive.sound.UISounds.confirm();
+                        onShow();
+                    });
+            buttons.add(resetAccentButton);
+        }
+        resetAccentButton.x = x;
+        resetAccentButton.y = y;
+        return resetAccentButton;
+    }
 
     private ClTextField ensureApiKeyField(int x, int y, int w) {
         if (apiKeyField == null) {

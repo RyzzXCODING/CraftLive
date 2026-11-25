@@ -1,0 +1,29 @@
+{
+  "ui.click": {
+    "sounds": [{"name": "craftlive:ui/click", "volume": 1.0}]
+  },
+  "ui.toggle_on": {
+    "sounds": [{"name": "craftlive:ui/toggle_on", "volume": 1.0}]
+  },
+  "ui.toggle_off": {
+    "sounds": [{"name": "craftlive:ui/toggle_off", "volume": 1.0}]
+  },
+  "ui.tab": {
+    "sounds": [{"name": "craftlive:ui/tab", "volume": 1.0}]
+  },
+  "ui.open": {
+    "sounds": [{"name": "craftlive:ui/open", "volume": 1.0}]
+  },
+  "ui.close": {
+    "sounds": [{"name": "craftlive:ui/close", "volume": 1.0}]
+  },
+  "ui.widget": {
+    "sounds": [{"name": "craftlive:ui/widget", "volume": 1.0}]
+  },
+  "ui.confirm": {
+    "sounds": [{"name": "craftlive:ui/confirm", "volume": 1.0}]
+  },
+  "ui.hover": {
+    "sounds": [{"name": "craftlive:ui/hover", "volume": 1.0}]
+  }
+}

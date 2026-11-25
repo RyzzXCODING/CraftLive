@@ -41,10 +41,10 @@ public class ClSlider {
                 CraftLiveTheme.withAlpha(CraftLiveTheme.PANEL_2, alpha));
         int handleX = x + (int) (w * Math.max(0f, Math.min(1f, value)));
         ClRender.roundedRect(g, x, trackY, handleX - x, 4, 2,
-                CraftLiveTheme.withAlpha(CraftLiveTheme.ACCENT, alpha));
+                CraftLiveTheme.withAlpha(CraftLiveTheme.accent(), alpha));
         boolean hovered = mouseX >= x && mouseX <= x + w && mouseY >= trackY - 4 && mouseY <= trackY + 10;
         ClRender.roundedRect(g, handleX - 4, trackY - 3, 8, 10, 4,
-                CraftLiveTheme.withAlpha(hovered || dragging ? CraftLiveTheme.ACCENT_HOVER : 0xFFFFFF, alpha));
+                CraftLiveTheme.withAlpha(hovered || dragging ? CraftLiveTheme.accentHover() : 0xFFFFFF, alpha));
 
         String valueText = valueLabel(value);
         g.drawString(font, valueText, x + w + 8, y + 6, CraftLiveTheme.withAlpha(CraftLiveTheme.TEXT_DIM, alpha), true);
@@ -91,7 +91,16 @@ public class ClSlider {
     }
 
     public void mouseReleased() {
-        dragging = false;
+        if (dragging) {
+            dragging = false;
+            // one soft tick when the handle is let go (no drag-spam sounds)
+            com.alpoyy.craftlive.sound.UISounds.sliderRelease();
+        }
+    }
+
+    /** Test hook. */
+    public boolean isDraggingForTest() {
+        return dragging;
     }
 
     private void apply(double mouseX) {

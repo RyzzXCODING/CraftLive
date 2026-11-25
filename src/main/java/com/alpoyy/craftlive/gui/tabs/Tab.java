@@ -19,6 +19,11 @@ public interface Tab {
 
     boolean mouseClicked(double mouseX, double mouseY, int button);
 
+    /** Continuous drag (slider handles etc.), screen space. */
+    default boolean mouseDragged(double mouseX, double mouseY) {
+        return false;
+    }
+
     boolean mouseScrolled(double mouseX, double mouseY, double deltaY);
 
     boolean keyPressed(int key, int modifiers);

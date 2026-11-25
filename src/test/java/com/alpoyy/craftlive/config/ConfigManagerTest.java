@@ -119,4 +119,50 @@ class ConfigManagerTest {
         assertFalse(content.toLowerCase().contains("secret"));
         assertFalse(content.toLowerCase().contains("token"));
     }
+
+    @Test
+    void accentColorAndSoundSettingsRoundTrip() throws Exception {
+        Path path = tempDir.resolve("cfg.json");
+        ConfigManager first = new ConfigManager(path);
+        CraftLiveConfig config = first.load();
+        config.accentColorHex = "#4287FF";
+        config.uiSoundsEnabled = false;
+        config.uiSoundVolume = 0.35f;
+        config.uiSoundClick = false;
+        config.uiSoundHover = true;
+        first.saveNow();
+
+        ConfigManager second = new ConfigManager(path);
+        CraftLiveConfig loaded = second.load();
+        assertEquals("#4287FF", loaded.accentColorHex);
+        assertFalse(loaded.uiSoundsEnabled);
+        assertEquals(0.35f, loaded.uiSoundVolume, 0.001f);
+        assertFalse(loaded.uiSoundClick);
+        assertTrue(loaded.uiSoundHover);
+    }
+
+    @Test
+    void invalidAccentHexInFileFallsBackToDefault() throws Exception {
+        Path path = tempDir.resolve("cfg.json");
+        Files.writeString(path, "{\"accentColorHex\": \"#NOPE!!\", \"uiSoundVolume\": 2.5}");
+        ConfigManager manager = new ConfigManager(path);
+        CraftLiveConfig config = manager.load();
+        assertEquals(com.alpoyy.craftlive.theme.AccentColor.DEFAULT_HEX, config.accentColorHex,
+                "invalid hex must fall back to the default red");
+        assertEquals(1.0f, config.uiSoundVolume, 0.001f, "volume must clamp to 0..1");
+    }
+
+    @Test
+    void defaultsForNewFields() {
+        CraftLiveConfig config = new CraftLiveConfig();
+        assertEquals(com.alpoyy.craftlive.theme.AccentColor.DEFAULT_HEX, config.accentColorHex);
+        assertTrue(config.uiSoundsEnabled);
+        assertEquals(0.6f, config.uiSoundVolume, 0.001f);
+        assertTrue(config.uiSoundClick);
+        assertTrue(config.uiSoundToggle);
+        assertTrue(config.uiSoundTab);
+        assertTrue(config.uiSoundMenu);
+        assertTrue(config.uiSoundWidget);
+        assertFalse(config.uiSoundHover);
+    }
 }

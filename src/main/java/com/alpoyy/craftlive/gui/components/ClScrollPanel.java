@@ -3,14 +3,12 @@ package com.alpoyy.craftlive.gui.components;
 import net.minecraft.client.gui.GuiGraphics;
 
 /**
- * Scissor-clipped scroll region with smooth (targeted) scrolling.
- * The content is drawn by a callback between enable/disable scissor.
+ * Scissor-clipped scroll region with smooth scrolling and a visual
+ * scrollbar. Scroll math lives in {@link ScrollModel} (pure, tested).
  */
 public class ClScrollPanel {
     public int x, y, w, h;
-    private float scrollOffset = 0;    // px
-    private float scrollTarget = 0;
-    private float contentHeight = 0;
+    public final ScrollModel model = new ScrollModel();
 
     public ClScrollPanel(int x, int y, int w, int h) {
         this.x = x;
@@ -20,50 +18,53 @@ public class ClScrollPanel {
     }
 
     public void setContentHeight(float contentHeight) {
-        this.contentHeight = Math.max(0, contentHeight);
-        clampScroll();
+        model.setContentHeight(contentHeight);
     }
 
     public float offset() {
-        return scrollOffset;
-    }
-
-    public void update() {
-        // smooth approach — FPS independent
-        scrollOffset += (scrollTarget - scrollOffset) * 0.22f;
-        if (Math.abs(scrollTarget - scrollOffset) < 0.5f) scrollOffset = scrollTarget;
+        return model.offset();
     }
 
     public void scrollBy(double dy) {
-        scrollTarget += dy;
-        clampScroll();
+        model.scrollBy(dy);
     }
 
-    private void clampScroll() {
-        float max = Math.max(0, contentHeight - h);
-        scrollTarget = Math.max(0, Math.min(scrollTarget, max));
+    public void reset() {
+        model.reset();
     }
 
     public boolean isScrollbarVisible() {
-        return contentHeight > h;
+        return model.scrollable();
+    }
+
+    /** True when the cursor is inside this panel's bounds. */
+    public boolean isOver(double mouseX, double mouseY) {
+        return mouseX >= x && mouseX <= x + w && mouseY >= y && mouseY <= y + h;
     }
 
     /** Draw content with clipping + scrollbar. */
     public void render(GuiGraphics g, float alpha, Runnable content) {
+        model.setViewport(h);
+        model.update(); // advance smooth scroll exactly once per frame
+
         g.enableScissor(x, y, x + w, y + h);
         g.pose().pushMatrix();
-        g.pose().translate(0, -scrollOffset);
+        g.pose().translate(0, -model.offset());
         content.run();
         g.pose().popMatrix();
         g.disableScissor();
 
         if (isScrollbarVisible()) {
-            float ratio = h / contentHeight;
-            int barH = Math.max(24, (int) (h * ratio));
-            int barY = y + (int) ((h - barH) * (scrollTarget / Math.max(1, contentHeight - h)));
+            // thumb size ∝ viewport/content, position ∝ offset/maxScroll
+            float contentTotal = model.maxScroll() + h;
+            int barH = Math.max(24, (int) (h * (h / contentTotal)));
+            float frac = model.offset() / model.maxScroll();
+            int barY = y + (int) ((h - barH) * frac);
             int barX = x + w - 4;
             g.fill(barX, y, barX + 3, y + h, 0x20FFFFFF);
-            g.fill(barX, barY, barX + 3, barY + barH, 0x66C43A3A);
+            int accent = com.alpoyy.craftlive.theme.CraftLiveTheme.withAlpha(
+                    com.alpoyy.craftlive.theme.CraftLiveTheme.accent(), 0x66);
+            g.fill(barX, barY, barX + 3, barY + barH, accent);
         }
     }
 }

@@ -91,7 +91,7 @@ public class HudEditorTab extends TabBase {
             for (HudWidget widget : widgetList) {
                 if (selected == widget) {
                     g.fill(cx - 2, cy - 3, cx + scroll.w - 2, cy + 15,
-                            CraftLiveTheme.withAlpha(CraftLiveTheme.ACCENT, a * 0.18f));
+                            CraftLiveTheme.withAlpha(CraftLiveTheme.accent(), a * 0.18f));
                 }
                 g.drawString(font, widget.title, cx, cy, CraftLiveTheme.withAlpha(CraftLiveTheme.TEXT, a), true);
                 String state = widget.isVisible() ? "tampil" : "sembunyi";

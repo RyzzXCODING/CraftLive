@@ -24,7 +24,7 @@ public class DashboardSummaryWidget extends HudWidget {
         int pad = 8;
         float a = alpha;
 
-        g.drawString(font, "CRAFTLIVE", pad, 4, CraftLiveTheme.withAlpha(CraftLiveTheme.ACCENT_HOVER, a), true);
+        g.drawString(font, "CRAFTLIVE", pad, 4, CraftLiveTheme.withAlpha(CraftLiveTheme.accentHover(), a), true);
 
         if (editorMode) {
             g.drawString(font, "LIVE ● 1.2K penonton", pad, 18, CraftLiveTheme.withAlpha(CraftLiveTheme.TEXT_DIM, a), true);

@@ -48,6 +48,10 @@ public class CraftLiveClient implements ClientModInitializer {
         // keybinds (M/T/J/L) — MUST be registered during client init
         ModKeybinds.register();
 
+        // UI click sounds (original assets; played only on successful interactions)
+        com.alpoyy.craftlive.sound.UISounds.registerAll();
+        com.alpoyy.craftlive.sound.UISounds.attach(() -> CraftLiveServices.get().config);
+
         // HUD rendering via the modern HudElementRegistry (not deprecated callbacks)
         HudElementRegistry.addLast(
                 Identifier.fromNamespaceAndPath(MOD_ID, "widgets"),

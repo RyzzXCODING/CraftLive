@@ -50,7 +50,7 @@ public class ClockTab extends TabBase {
             var f30 = font;
             g.drawString(f30, time, cx, cy, CraftLiveTheme.withAlpha(CraftLiveTheme.TEXT, a), true);
             g.drawString(f30, ClockEngine.zoneLabel(zone), cx + f30.width(time) + 10, cy + 4,
-                    CraftLiveTheme.withAlpha(CraftLiveTheme.ACCENT_HOVER, a), true);
+                    CraftLiveTheme.withAlpha(CraftLiveTheme.accentHover(), a), true);
             cy += 22;
 
             section(g, font, "Zona Waktu", cx, cy, scroll.w, a);

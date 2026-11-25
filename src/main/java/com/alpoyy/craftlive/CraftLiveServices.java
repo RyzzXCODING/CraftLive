@@ -33,6 +33,10 @@ public final class CraftLiveServices {
         this.configManager = configManager;
         this.config = configManager.load();
 
+        // apply the persisted global accent color (invalid → default red)
+        com.alpoyy.craftlive.theme.CraftLiveTheme.setAccent(
+                com.alpoyy.craftlive.theme.AccentColor.sanitize(config.accentColorHex));
+
         com.alpoyy.craftlive.live.LiveProvider provider = config.mockMode
                 ? new com.alpoyy.craftlive.mock.MockLiveProvider()
                 : new com.alpoyy.craftlive.live.EulerStreamProvider();

@@ -227,7 +227,7 @@ public abstract class HudWidget {
             var mc = Minecraft.getInstance();
             int sw = (int) (renderWidth() * globalScale) + 4;
             int sh = (int) (renderHeight() * globalScale) + 4;
-            g.renderOutline((int) x - 2, (int) y - 2, sw, sh, CraftLiveTheme.withAlpha(CraftLiveTheme.ACCENT_HOVER, 0.9f));
+            g.renderOutline((int) x - 2, (int) y - 2, sw, sh, CraftLiveTheme.withAlpha(CraftLiveTheme.accentHover(), 0.9f));
         }
     }
 
@@ -242,7 +242,7 @@ public abstract class HudWidget {
         ClRender.roundedRectBordered(g, 0, 0, w, h, 6, bg,
                 CraftLiveTheme.withAlpha(CraftLiveTheme.BORDER, alpha * 0.9f));
         // accent top edge
-        g.fill(6, 0, w - 6, 1, CraftLiveTheme.withAlpha(CraftLiveTheme.ACCENT, alpha * 0.7f));
+        g.fill(6, 0, w - 6, 1, CraftLiveTheme.withAlpha(CraftLiveTheme.accent(), alpha * 0.7f));
     }
 
     protected static Font font() {

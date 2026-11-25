@@ -35,7 +35,7 @@ public class ClockWidget extends HudWidget {
 
         g.drawString(font, realTime, pad, 6, CraftLiveTheme.withAlpha(CraftLiveTheme.TEXT, a), true);
         g.drawString(font, zoneLabel, w - font.width(zoneLabel) - pad, 8,
-                CraftLiveTheme.withAlpha(CraftLiveTheme.ACCENT_HOVER, a), true);
+                CraftLiveTheme.withAlpha(CraftLiveTheme.accentHover(), a), true);
 
         if (editorMode) {
             g.drawString(font, "☾ Hari 7 — Malam", pad, 22, CraftLiveTheme.withAlpha(CraftLiveTheme.TEXT_DIM, a), true);

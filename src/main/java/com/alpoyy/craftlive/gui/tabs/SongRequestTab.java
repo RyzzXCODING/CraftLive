@@ -82,7 +82,7 @@ public class SongRequestTab extends TabBase {
             var current = rm.currentRequest();
             ClRender.roundedRectBordered(g, cx, cy, scroll.w, 40, 6,
                     CraftLiveTheme.withAlpha(CraftLiveTheme.PANEL, a * 0.95f),
-                    CraftLiveTheme.withAlpha(CraftLiveTheme.ACCENT, a * 0.8f));
+                    CraftLiveTheme.withAlpha(CraftLiveTheme.accent(), a * 0.8f));
             if (current != null) {
                 String title = current.track == null ? current.title : current.track;
                 g.drawString(font, ClRender.clip(font, title, scroll.w - 90), cx + 8, cy + 6,

@@ -62,7 +62,7 @@ public class ClTextField {
     }
 
     public void render(GuiGraphics g, Font font, double mouseX, double mouseY, float alpha, long epochMs) {
-        int borderColor = focused ? CraftLiveTheme.ACCENT : CraftLiveTheme.BORDER;
+        int borderColor = focused ? CraftLiveTheme.accent() : CraftLiveTheme.BORDER;
         ClRender.roundedRectBordered(g, x, y, w, h, 5,
                 CraftLiveTheme.withAlpha(CraftLiveTheme.PANEL, alpha * 0.9f),
                 CraftLiveTheme.withAlpha(borderColor, alpha));

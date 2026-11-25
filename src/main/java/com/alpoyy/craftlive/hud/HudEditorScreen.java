@@ -53,7 +53,7 @@ public class HudEditorScreen extends Screen {
         // header bar
         ClRender.roundedRectBordered(g, width / 2 - 220, 6, 440, 24, 6,
                 CraftLiveTheme.withAlpha(CraftLiveTheme.PANEL, 0.95f),
-                CraftLiveTheme.withAlpha(CraftLiveTheme.ACCENT, 0.8f));
+                CraftLiveTheme.withAlpha(CraftLiveTheme.accent(), 0.8f));
         String title = "HUD EDITOR — seret widget (klik kiri), klik kanan = tampil/sembunyi";
         g.drawString(font, title, width / 2 - font.width(title) / 2, 13,
                 CraftLiveTheme.withAlpha(CraftLiveTheme.TEXT, 1f), true);
@@ -70,7 +70,7 @@ public class HudEditorScreen extends Screen {
             String info = selected.title + "  @ " + (int) selected.getX() + "," + (int) selected.getY()
                     + "  skala " + String.format("%.2fx", selected.effectiveScale());
             g.drawString(font, info, 8, height - 14,
-                    CraftLiveTheme.withAlpha(CraftLiveTheme.ACCENT_HOVER, 1f), true);
+                    CraftLiveTheme.withAlpha(CraftLiveTheme.accentHover(), 1f), true);
         }
         String hint = "Esc/J: simpan & keluar";
         g.drawString(font, hint, width - font.width(hint) - 8, height - 14,

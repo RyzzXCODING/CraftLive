@@ -86,6 +86,7 @@ public class WidgetManager {
     /** T key: toggle all floating widgets; systems keep running. */
     public boolean toggleAllHud() {
         config.hudVisible = !config.hudVisible;
+        com.alpoyy.craftlive.sound.UISounds.widget();
         return config.hudVisible;
     }
 
@@ -127,9 +128,12 @@ public class WidgetManager {
             for (HudWidget w : widgets.values()) w.setSelected(w == hit);
             if (button == 0) {
                 hit.startDrag(mouseX, mouseY);
+                com.alpoyy.craftlive.sound.UISounds.widget();
                 return true;
             } else if (button == 1) {
                 hit.setVisible(!hit.isVisible());
+                com.alpoyy.craftlive.sound.UISounds.widget();
+                saveAll();
                 return true;
             }
         } else {

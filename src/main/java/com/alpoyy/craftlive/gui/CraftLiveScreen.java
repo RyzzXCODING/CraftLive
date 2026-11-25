@@ -64,6 +64,7 @@ public class CraftLiveScreen extends Screen {
         openAnim = 0f;
         closing = false;
         closeAnim = 0f;
+        com.alpoyy.craftlive.sound.UISounds.open();
     }
 
     // ---- layout ----
@@ -148,7 +149,7 @@ public class CraftLiveScreen extends Screen {
                 CraftLiveTheme.withAlpha(CraftLiveTheme.PANEL, alpha * 0.7f));
         // logo header
         g.drawString(font, "CRAFT", px + 12, py + 10, CraftLiveTheme.withAlpha(CraftLiveTheme.TEXT, alpha), true);
-        g.drawString(font, "LIVE", px + 12 + font.width("CRAFT") + 1, py + 10, CraftLiveTheme.withAlpha(CraftLiveTheme.ACCENT_HOVER, alpha), true);
+        g.drawString(font, "LIVE", px + 12 + font.width("CRAFT") + 1, py + 10, CraftLiveTheme.withAlpha(CraftLiveTheme.accentHover(), alpha), true);
         g.drawString(font, services.config.mockMode ? "MOCK MODE" : "v" + com.alpoyy.craftlive.CraftLive.VERSION,
                 px + 12, py + 22, CraftLiveTheme.withAlpha(services.config.mockMode ? CraftLiveTheme.WARNING : CraftLiveTheme.TEXT_DIM, alpha), true);
         g.fill(px + 8, py + 34, px + SIDEBAR_W - 8, py + 35,
@@ -162,7 +163,7 @@ public class CraftLiveScreen extends Screen {
                     && mouseY >= ty && mouseY <= ty + 18;
             if (selected) {
                 ClRender.roundedRect(g, px + 6, ty, SIDEBAR_W - 12, 17, 5,
-                        CraftLiveTheme.withAlpha(CraftLiveTheme.ACCENT, alpha * 0.85f));
+                        CraftLiveTheme.withAlpha(CraftLiveTheme.accent(), alpha * 0.85f));
             } else if (hovered) {
                 ClRender.roundedRect(g, px + 6, ty, SIDEBAR_W - 12, 17, 5,
                         CraftLiveTheme.withAlpha(CraftLiveTheme.PANEL_2, alpha * 0.8f));
@@ -255,7 +256,10 @@ public class CraftLiveScreen extends Screen {
             int ty = py + 42;
             for (int i = 0; i < tabs.size(); i++) {
                 if (mouseY >= ty && mouseY <= ty + 18) {
-                    if (i != activeTab && pendingTab < 0) pendingTab = i;
+                    if (i != activeTab && pendingTab < 0) {
+                        pendingTab = i;
+                        com.alpoyy.craftlive.sound.UISounds.tab();
+                    }
                     return true;
                 }
                 ty += 21;
@@ -267,7 +271,7 @@ public class CraftLiveScreen extends Screen {
 
     @Override
     public boolean mouseDragged(net.minecraft.client.input.MouseButtonEvent event, double dragX, double dragY) {
-        return tabs.get(activeTab).mouseClicked(event.x(), event.y(), event.button())
+        return tabs.get(activeTab).mouseDragged(event.x(), event.y())
                 || super.mouseDragged(event, dragX, dragY);
     }
 
@@ -323,6 +327,7 @@ public class CraftLiveScreen extends Screen {
 
     private void onCloseImmediate() {
         services.configManager.saveAsync();
+        com.alpoyy.craftlive.sound.UISounds.close();
         minecraft.setScreen(null);
     }
 }

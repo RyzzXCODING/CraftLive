@@ -34,7 +34,7 @@ public class SongRequestWidget extends HudWidget {
 
         // header strip
         g.fill(0, 0, w, 18, CraftLiveTheme.withAlpha(CraftLiveTheme.PANEL_2, a));
-        g.drawString(font, "♪ REQUEST LAGU", pad, 5, CraftLiveTheme.withAlpha(CraftLiveTheme.ACCENT_HOVER, a), true);
+        g.drawString(font, "♪ REQUEST LAGU", pad, 5, CraftLiveTheme.withAlpha(CraftLiveTheme.accentHover(), a), true);
         String count = requests.queue().size() + "/" + requests.queue().maxQueue();
         g.drawString(font, count, w - font.width(count) - pad, 5, CraftLiveTheme.withAlpha(CraftLiveTheme.TEXT_DIM, a), true);
 
@@ -42,8 +42,8 @@ public class SongRequestWidget extends HudWidget {
 
         if (editorMode && current == null) {
             g.drawString(font, "Judul Lagu (preview)", pad, 26, CraftLiveTheme.withAlpha(CraftLiveTheme.TEXT, a), true);
-            g.drawString(font, "@requester", pad, 52, CraftLiveTheme.withAlpha(CraftLiveTheme.ACCENT_HOVER, a), true);
-            g.drawString(font, "#1 SEDANG", pad, 24, CraftLiveTheme.withAlpha(CraftLiveTheme.ACCENT_HOVER, a), true);
+            g.drawString(font, "@requester", pad, 52, CraftLiveTheme.withAlpha(CraftLiveTheme.accentHover(), a), true);
+            g.drawString(font, "#1 SEDANG", pad, 24, CraftLiveTheme.withAlpha(CraftLiveTheme.accentHover(), a), true);
             g.drawString(font, "Berikutnya: judul berikutnya", pad, h - 12, CraftLiveTheme.withAlpha(CraftLiveTheme.TEXT_DIM, a), true);
             return;
         }
@@ -58,7 +58,7 @@ public class SongRequestWidget extends HudWidget {
         // queue number + status row
         int pos = requests.queue().position(current.id);
         String posText = pos > 0 ? "#" + pos : "SEDANG";
-        g.drawString(font, posText, pad, 24, CraftLiveTheme.withAlpha(CraftLiveTheme.ACCENT_HOVER, a), true);
+        g.drawString(font, posText, pad, 24, CraftLiveTheme.withAlpha(CraftLiveTheme.accentHover(), a), true);
         String status = current.status.display();
         g.drawString(font, status, w - font.width(status) - pad, 24,
                 CraftLiveTheme.withAlpha(CraftLiveTheme.LIVE_GREEN, a), true);
@@ -83,7 +83,7 @@ public class SongRequestWidget extends HudWidget {
 
         // requester
         String requester = "@" + ClRender.clip(font, current.requester, w - pad * 2);
-        g.drawString(font, requester, pad, 52, CraftLiveTheme.withAlpha(CraftLiveTheme.ACCENT_HOVER, a * 0.95f), true);
+        g.drawString(font, requester, pad, 52, CraftLiveTheme.withAlpha(CraftLiveTheme.accentHover(), a * 0.95f), true);
 
         // artist (when part of the request text)
         if (!current.artist.isBlank()) {

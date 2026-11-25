@@ -20,6 +20,19 @@ public class CraftLiveConfig {
     public boolean reducedMotion = false;            // respect reduced-motion preference
     public boolean showNotificationsOnScreen = true;
 
+    // ---- Appearance ----
+    public String accentColorHex = com.alpoyy.craftlive.theme.AccentColor.DEFAULT_HEX; // global accent (default red)
+
+    // ---- UI & Interaction sounds ----
+    public boolean uiSoundsEnabled = true;
+    public float uiSoundVolume = 0.6f;               // separate from music volume
+    public boolean uiSoundClick = true;
+    public boolean uiSoundToggle = true;
+    public boolean uiSoundTab = true;
+    public boolean uiSoundMenu = true;
+    public boolean uiSoundWidget = true;
+    public boolean uiSoundHover = false;             // optional, off by default
+
     // ---- UI / HUD ----
     public float hudGlobalOpacity = 1.0f;            // 0.1..1
     public float hudGlobalScale = 1.0f;              // 0.5..2
@@ -120,6 +133,18 @@ public class CraftLiveConfig {
     /** Merge values from a loaded (possibly older/partial) config, ignoring nulls. */
     public void mergeFrom(CraftLiveConfig loaded) {
         if (loaded == null) return;
+        // accent: invalid hex from an old/corrupted file falls back to default
+        this.accentColorHex = com.alpoyy.craftlive.theme.AccentColor.isValid(loaded.accentColorHex)
+                ? com.alpoyy.craftlive.theme.AccentColor.toHex(com.alpoyy.craftlive.theme.AccentColor.sanitize(loaded.accentColorHex))
+                : com.alpoyy.craftlive.theme.AccentColor.DEFAULT_HEX;
+        this.uiSoundsEnabled = loaded.uiSoundsEnabled;
+        this.uiSoundVolume = clamp(loaded.uiSoundVolume, 0f, 1f);
+        this.uiSoundClick = loaded.uiSoundClick;
+        this.uiSoundToggle = loaded.uiSoundToggle;
+        this.uiSoundTab = loaded.uiSoundTab;
+        this.uiSoundMenu = loaded.uiSoundMenu;
+        this.uiSoundWidget = loaded.uiSoundWidget;
+        this.uiSoundHover = loaded.uiSoundHover;
         this.mockMode = loaded.mockMode;
         this.notificationsEnabled = loaded.notificationsEnabled;
         this.animationsEnabled = loaded.animationsEnabled;

@@ -101,13 +101,13 @@ public class MusicTab extends TabBase {
                 if (progress >= 0 && track.durationMs > 0) {
                     ClRender.progressBar(g, cx, cy, scroll.w - 60, 6, (float) progress / track.durationMs,
                             CraftLiveTheme.withAlpha(CraftLiveTheme.PANEL_2, a),
-                            CraftLiveTheme.withAlpha(CraftLiveTheme.ACCENT, a));
+                            CraftLiveTheme.withAlpha(CraftLiveTheme.accent(), a));
                     String time = fmt(progress) + " / " + fmt(track.durationMs);
                     g.drawString(font, time, cx + scroll.w - 56, cy - 2, CraftLiveTheme.withAlpha(CraftLiveTheme.TEXT_DIM, a), true);
                 } else {
                     ClRender.progressBar(g, cx, cy, scroll.w - 60, 6, 0,
                             CraftLiveTheme.withAlpha(CraftLiveTheme.PANEL_2, a),
-                            CraftLiveTheme.withAlpha(CraftLiveTheme.ACCENT, a * 0.4f));
+                            CraftLiveTheme.withAlpha(CraftLiveTheme.accent(), a * 0.4f));
                 }
                 cy += 14;
             } else {
