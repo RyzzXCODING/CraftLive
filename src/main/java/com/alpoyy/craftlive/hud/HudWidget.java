@@ -106,11 +106,16 @@ public abstract class HudWidget {
         this.selected = s;
     }
 
-    /** Keep inside the current GUI-scaled window. */
+    /** Keep inside the current GUI-scaled window.
+     * Null-safe: during client entrypoint the window does not exist yet —
+     * clamping is simply skipped until it does (see also render()). */
     public void clampToScreen() {
         var mc = Minecraft.getInstance();
-        int sw = mc.getWindow().getGuiScaledWidth();
-        int sh = mc.getWindow().getGuiScaledHeight();
+        var window = mc == null ? null : mc.getWindow();
+        if (window == null) return;   // window not created yet
+        int sw = window.getGuiScaledWidth();
+        int sh = window.getGuiScaledHeight();
+        if (sw <= 0 || sh <= 0) return;
         float maxW = Math.min(renderWidth(), sw - 8);
         x = Math.max(4, Math.min(x, sw - maxW - 4));
         y = Math.max(4, Math.min(y, sh - Math.min(renderHeight(), sh - 8) - 4));
@@ -187,6 +192,9 @@ public abstract class HudWidget {
     /** Called each frame when visible. Handles scale/opacity/pop-in; subclass draws content. */
     public final void render(GuiGraphics g, float globalScale, float globalOpacity, boolean editorMode, long epochMs) {
         if (!visible) return;
+        // self-heal: keep widgets on-screen if the window resized or a saved
+        // position no longer fits (safe every frame — cheap math)
+        clampToScreen();
         float alpha = opacity * globalOpacity;
         if (alpha <= 0.02f) return;
 

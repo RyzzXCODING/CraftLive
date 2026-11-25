@@ -64,8 +64,9 @@ public final class ModKeybinds {
             }
         }
         while (TOGGLE_HUD.consumeClick()) {
-            var config = com.alpoyy.craftlive.CraftLiveServices.get().config;
-            boolean nowVisible = com.alpoyy.craftlive.CraftLiveServices.get().widgets.toggleAllHud();
+            var services = com.alpoyy.craftlive.CraftLiveServices.get();
+            if (services.widgets == null) continue;   // widgets not initialized yet
+            boolean nowVisible = services.widgets.toggleAllHud();
             configManagerSave();
             com.alpoyy.craftlive.CraftLiveServices.get().notifications.push(
                     com.alpoyy.craftlive.notify.NotificationBus.Notification.Level.INFO,

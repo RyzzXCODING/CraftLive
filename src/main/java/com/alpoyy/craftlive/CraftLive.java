@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 public final class CraftLive {
     public static final String MOD_ID = "craftlive";
     public static final String MOD_NAME = "CraftLive";
-    public static final String VERSION = "1.0.0";
+    public static final String VERSION = "1.0.1";
     public static final Logger LOGGER = LoggerFactory.getLogger("CraftLive");
 
     private CraftLive() {

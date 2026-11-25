@@ -35,10 +35,17 @@ public class CraftLiveClient implements ClientModInitializer {
                 com.alpoyy.craftlive.config.CraftLiveConfig.CONFIG_FILE));
         var services = CraftLiveServices.get();
 
-        // widgets
-        services.widgets = new WidgetManager(services.config, services.configManager);
+        // widgets — created only after the client is fully started, because
+        // widget layout clamping needs the game window (which does NOT exist
+        // yet while entrypoints run, inside new MinecraftClient()).
+        ClientLifecycleEvents.CLIENT_STARTED.register(mc -> {
+            if (services.widgets == null) {
+                services.widgets = new WidgetManager(services.config, services.configManager);
+                LOGGER.info("CraftLive widgets initialized ({} widgets)", services.widgets.all().size());
+            }
+        });
 
-        // keybinds (M/T/J/L)
+        // keybinds (M/T/J/L) — MUST be registered during client init
         ModKeybinds.register();
 
         // HUD rendering via the modern HudElementRegistry (not deprecated callbacks)
@@ -54,6 +61,12 @@ public class CraftLiveClient implements ClientModInitializer {
         services.requests.setPlaybackGate(() ->
                 services.youtube != null && services.youtube.isGateActive());
         ClientTickEvents.END_CLIENT_TICK.register(mc -> {
+            // belt-and-braces: if CLIENT_STARTED was missed on an unusual
+            // launcher, create widgets at the first tick (window exists here)
+            if (services.widgets == null) {
+                services.widgets = new WidgetManager(services.config, services.configManager);
+                LOGGER.info("CraftLive widgets initialized (fallback path)");
+            }
             ModKeybinds.tick(mc);
             services.requests.tick();
             if (services.youtube != null) {
