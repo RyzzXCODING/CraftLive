@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "craftlive",
+  "version": "${version}",
+  "name": "CraftLive",
+  "description": "CraftLive adalah mod pendamping streamer Minecraft yang menghadirkan integrasi TikTok LIVE, Live Chat, statistik siaran, music player, song request, lyrics, clock, serta HUD widget yang dapat dikustomisasi.",
+  "authors": [
+    "Alpoyy"
+  ],
+  "contact": {
+    "homepage": "https://github.com/RyzzXCODING/CraftLive",
+    "sources": "https://github.com/RyzzXCODING/CraftLive"
+  },
+  "license": "MIT",
+  "icon": "assets/craftlive/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.alpoyy.craftlive.CraftLiveClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "fabric-api": "*",
+    "minecraft": "~1.21.11",
+    "java": ">=21"
+  }
+}

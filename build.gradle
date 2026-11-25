@@ -1,0 +1,111 @@
+plugins {
+    id 'fabric-loom' version "${loom_version}"
+    id 'java'
+}
+
+group = project.maven_group
+version = project.mod_version
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+base {
+    archivesName = project.archives_base_name
+}
+
+repositories {
+    mavenCentral()
+    maven { url = "https://maven.fabricmc.net/" }
+    maven { url = "https://jitpack.io/" }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+    // EulerStream / TikTok LIVE realtime integration (documented at
+    // eulerstream.com/docs/libraries/java; delivered via JitPack).
+    // gson + slf4j come with Minecraft/Fabric Loader and are excluded.
+    def ttlj = ["com.github.jwdeveloper.TikTok-Live-Java:Client:1.11.0-Release",
+                "com.github.jwdeveloper.TikTok-Live-Java:API:1.11.0-Release"]
+    ttlj.each { dep ->
+        implementation(dep) {
+            exclude group: "com.google.code.gson"
+            exclude group: "org.slf4j"
+            exclude group: "org.testng"
+        }
+        include(dep) {
+            exclude group: "com.google.code.gson"
+            exclude group: "org.slf4j"
+            exclude group: "org.testng"
+        }
+    }
+    include "com.google.protobuf:protobuf-java:4.26.1"
+    include "org.java-websocket:Java-WebSocket:1.5.5"
+
+    // Audio playback engine for yt-dlp-resolved direct streams (user-authorized
+    // yt-dlp extraction; lavaplayer only plays the resulting direct URL).
+    // NOTE: the Walkyst fork's root artifact is POM-only — the real classes
+    // live in the lavaplayer + lava-common sub-modules, which must be included.
+    def lvp = ["com.github.Walkyst.lavaplayer-fork:lavaplayer:1.4.3",
+               "com.github.Walkyst.lavaplayer-fork:lava-common:1.4.3"]
+    lvp.each { dep ->
+        implementation(dep) {
+            exclude group: "org.slf4j"
+        }
+        include(dep) {
+            exclude group: "org.slf4j"
+        }
+    }
+    // lavaplayer's HTTP layer (not shipped with Minecraft)
+    include "org.apache.httpcomponents:httpclient:4.5.14"
+    include "org.apache.httpcomponents:httpcore:4.4.16"
+    include "commons-logging:commons-logging:1.2"
+    include "commons-codec:commons-codec:1.15"
+    include "com.fasterxml.jackson.core:jackson-core:2.17.2"
+    include "com.fasterxml.jackson.core:jackson-databind:2.17.2"
+    include "com.fasterxml.jackson.core:jackson-annotations:2.17.2"
+
+    // Unit testing
+    testImplementation platform('org.junit:junit-bom:5.10.2')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+processResources {
+    inputs.property "version", project.version
+
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 21
+    options.encoding = "UTF-8"
+}
+
+java {
+    withSourcesJar()
+}
+
+jar {
+    from("LICENSE") {
+        rename { "${it}_${project.base.archivesName.get()}" }
+    }
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+        exceptionFormat "full"
+    }
+}
