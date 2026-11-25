@@ -62,6 +62,8 @@ public final class CraftLiveServices {
                 com.alpoyy.craftlive.notify.NotificationBus.Notification.Level.ERROR, "Spotify", msg));
         this.platforms.register(this.youtube);
         this.platforms.register(this.spotify);
+        // initial yt-dlp probe in the background (throttled, never render-thread)
+        this.youtube.recheck();
 
         this.live.addListener(requests::onLiveEvent);
         this.live.addListener(this::onLiveEvent);

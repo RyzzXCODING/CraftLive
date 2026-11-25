@@ -8,6 +8,8 @@ import com.alpoyy.craftlive.music.Track;
 import com.alpoyy.craftlive.music.YtDlpClient;
 
 import java.util.List;
+
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
@@ -76,21 +78,50 @@ public class YoutubeMusicConnector implements MusicPlatform {
 
     @Override
     public boolean isConfigured() {
-        return ytdlp.checkAvailable() != null;
+        // cheap cached state — never spawns a process from render code
+        return ytdlp.isAvailable();
+    }
+
+    /** Convenience alias for the cached yt-dlp availability. */
+    public boolean isAvailable() {
+        return ytdlp.isAvailable();
+    }
+
+    /** Trigger a background re-probe (throttled inside the client). */
+    public void recheck() {
+        ytdlp.probeAsync();
     }
 
     @Override
     public void connect() {
+        // ensure a probe has run at least once, then react honestly
+        ytdlp.probeAsync();
         Thread t = new Thread(() -> {
-            String version = ytdlp.checkAvailable();
-            if (version == null) {
-                state.status = PlayerState.Status.ERROR;
-                state.errorMessage = "yt-dlp tidak ditemukan. Instal yt-dlp lalu atur path di Settings.";
-                return;
+            long deadline = System.currentTimeMillis() + 10_000;
+            while (System.currentTimeMillis() < deadline
+                    && ytdlp.availability() == YtDlpClient.Availability.CHECKING) {
+                try {
+                    Thread.sleep(150);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
             }
-            state.errorMessage = null;
-            state.status = PlayerState.Status.CONNECTED;
-            CraftLive.LOGGER.info("YouTube Music ready via yt-dlp {}", version);
+            switch (ytdlp.availability()) {
+                case AVAILABLE -> {
+                    state.errorMessage = null;
+                    state.status = PlayerState.Status.CONNECTED;
+                    CraftLive.LOGGER.info("YouTube Music ready via yt-dlp {}", ytdlp.availableVersion());
+                }
+                case UNAVAILABLE -> {
+                    state.status = PlayerState.Status.ERROR;
+                    state.errorMessage = ytdlp.unavailableMessage();
+                }
+                default -> {
+                    state.status = PlayerState.Status.ERROR;
+                    state.errorMessage = "yt-dlp belum terverifikasi — coba Periksa Ulang.";
+                }
+            }
         }, "CraftLive-YtConnect");
         t.setDaemon(true);
         t.start();
